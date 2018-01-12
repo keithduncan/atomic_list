@@ -35,12 +35,6 @@ pub struct Node<T> {
     pub next: NodePtr<T>
 }
 
-impl<T> Node<T> {
-    fn consume(self) -> (T, NodePtr<T>) {
-        (self.value, self.next)
-    }
-}
-
 #[derive(Debug)]
 pub struct AtomicList<T>(AtomicPtr<Node<T>>);
 
@@ -112,7 +106,8 @@ impl<T> Iterator for AtomicListIterator<T> {
         let p = self.0.load(Ordering::Acquire);
         unsafe { from_raw(p) }
             .map(|node| {
-                let (value, next) = node.consume();
+                let node = *node;
+                let Node { value, next } = node;
                 self.0.store(into_raw(next), Ordering::Release);
                 value
             })

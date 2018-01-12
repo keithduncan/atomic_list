@@ -1,0 +1,1 @@
+Forked implementation from https://github.com/Diggsey/lockless
